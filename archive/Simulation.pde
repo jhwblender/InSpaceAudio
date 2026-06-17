@@ -11,8 +11,10 @@ void setup(){
   room = new Room(new Vector3(6, 6, 3));
   room.addSpeaker(new Vector3(6, 3, 0));
   room.addSpeaker(new Vector3(0, 3, 0));
+  room.addSpeaker(new Vector3(0, 0, 0));
   room.getSpeaker(0).addSource(new SineWave(300));
   room.getSpeaker(1).addSource(new SineWave(600));
+  room.getSpeaker(2).addSource(new SineWave(1000));
 }
 
 void draw(){
