@@ -56,7 +56,8 @@ public class Engine extends PApplet {
 
                 if (heatMapMode) {
                     float avg = heatAccum[py][px] / (heatFrames + 1);
-                    pixels[py * w + px] = heatMapColor(avg);
+                    float normalizedAvg = avg / Math.max(1, room.getSpeakers().size());
+                    pixels[py * w + px] = heatMapColor(normalizedAvg);
                 } else {
                     int gray = (int) Math.max(0, Math.min(255, 128 * amp + 128));
                     pixels[py * w + px] = color(gray);
