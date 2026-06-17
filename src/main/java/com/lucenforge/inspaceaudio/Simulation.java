@@ -17,13 +17,9 @@ public class Simulation {
         room.addSpeaker(new Vector3(0, 0, 0));
 
         // Default direct-mode sources so the wavefield is visible out of the box
-//        room.getSpeaker(0).addSource(new SineWave(300));
-//        room.getSpeaker(1).addSource(new SineWave(600));
-//        room.getSpeaker(2).addSource(new SineWave(1000));
-
-        room.addZone(new AudioZone(new Vector3(3, 3, 1.5f), new SineWave(440)));
-        room.addZone(new AudioZone(new Vector3(5, 2, 1.5f), new SineWave(660)));
-        room.setSynthesizeMode(true);
+        room.getSpeaker(0).addSource(new SineWave(300));
+        room.getSpeaker(1).addSource(new SineWave(600));
+        room.getSpeaker(2).addSource(new SineWave(1000));
 
         microphones = new ArrayList<>();
     }

@@ -23,8 +23,13 @@ public class Room {
         return speakers.get(speakerNum);
     }
 
-    public ArrayList<Speaker> getSpeakers() {
-        return speakers;
+    public void addRandomSpeakers(int count) {
+        for (int i = 0; i < count; i++) {
+            float x = (float) (Math.random() * roomSize.x);
+            float y = (float) (Math.random() * roomSize.y);
+            float z = (float) (Math.random() * roomSize.z);
+            addSpeaker(new Vector3(x, y, z));
+        }
     }
 
     public Vector3 getSize() {

@@ -75,31 +75,43 @@ public class Engine extends PApplet {
     }
 
     private void drawOverlay(Room room, float scale) {
+        float sliceZ = simulation.getSliceZ();
+        float roomDepth = room.getSize().z;
+        float fadeRange = roomDepth * 0.5f; // full transparency at halfway across room depth
+
         strokeWeight(2);
         for (Speaker s : room.getSpeakers()) {
             Vector3 sl = s.getLoc();
-            float sx = sl.x * scale;
-            float sy = sl.y * scale;
-            fill(255, 0, 0);
-            stroke(255, 0, 0);
-            rect(sx - 5, sy - 5, 10, 10);
+            int alpha = zAlpha(sl.z, sliceZ, fadeRange);
+            fill(255, 0, 0, alpha);
+            stroke(255, 0, 0, alpha);
+            rect(sl.x * scale - 5, sl.y * scale - 5, 10, 10);
         }
 
         noFill();
-        stroke(0, 255, 0);
         for (AudioZone z : room.getZones()) {
             Vector3 zl = z.getPosition();
+            int alpha = zAlpha(zl.z, sliceZ, fadeRange);
+            stroke(0, 255, 0, alpha);
             ellipse(zl.x * scale, zl.y * scale, 20, 20);
         }
 
-        fill(0, 100, 255);
-        stroke(0, 100, 255);
         for (Microphone m : simulation.getMicrophones()) {
             Vector3 ml = m.getLoc();
+            int alpha = zAlpha(ml.z, sliceZ, fadeRange);
+            fill(0, 100, 255, alpha);
+            stroke(0, 100, 255, alpha);
             triangle(ml.x * scale, ml.y * scale - 6,
                      ml.x * scale - 5, ml.y * scale + 4,
                      ml.x * scale + 5, ml.y * scale + 4);
         }
+    }
+
+    /** Fade alpha based on distance from current Z slice */
+    private int zAlpha(float objectZ, float sliceZ, float fadeRange) {
+        float delta = Math.abs(objectZ - sliceZ);
+        float ratio = Math.max(0, 1 - delta / fadeRange);
+        return (int) (255 * ratio);
     }
 
     @Override
