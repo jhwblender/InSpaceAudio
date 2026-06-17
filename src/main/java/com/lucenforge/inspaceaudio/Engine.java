@@ -57,8 +57,7 @@ public class Engine extends PApplet {
 
                 if (heatMapMode) {
                     float avg = heatAccum[py][px] / (heatFrames + 1);
-                    float normalizedAvg = avg / Math.max(1, room.getSpeakers().size());
-                    pixels[py * w + px] = heatMapColor(normalizedAvg);
+                    pixels[py * w + px] = heatMapColor(avg);
                 } else {
                     int gray = (int) Math.max(0, Math.min(255, 128 * amp + 128));
                     pixels[py * w + px] = color(gray);
@@ -78,7 +77,7 @@ public class Engine extends PApplet {
     private void drawOverlay(Room room, float scale) {
         float sliceZ = simulation.getSliceZ();
         float roomDepth = room.getSize().z;
-        float fadeRange = roomDepth * 0.5f; // full transparency at halfway across room depth
+        float fadeRange = roomDepth * 0.5f;
 
         strokeWeight(2);
         for (Speaker s : room.getSpeakers()) {
@@ -89,14 +88,20 @@ public class Engine extends PApplet {
             rect(sl.x * scale - 5, sl.y * scale - 5, 10, 10);
         }
 
+        strokeWeight(3);
         noFill();
         for (AudioZone z : room.getZones()) {
             Vector3 zl = z.getPosition();
             int alpha = zAlpha(zl.z, sliceZ, fadeRange);
-            stroke(0, 255, 0, alpha);
-            ellipse(zl.x * scale, zl.y * scale, 20, 20);
+            stroke(255, 255, 255, alpha);
+            ellipse(zl.x * scale, zl.y * scale, 24, 24);
+            strokeWeight(1);
+            stroke(0, 255, 255, alpha);
+            ellipse(zl.x * scale, zl.y * scale, 16, 16);
+            strokeWeight(3);
         }
 
+        strokeWeight(2);
         for (Microphone m : simulation.getMicrophones()) {
             Vector3 ml = m.getLoc();
             int alpha = zAlpha(ml.z, sliceZ, fadeRange);
