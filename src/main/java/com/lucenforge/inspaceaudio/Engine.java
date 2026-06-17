@@ -11,8 +11,8 @@ public class Engine extends PApplet {
     // Time-averaging accumulators for the heat map
     private float[][] heatAccum;
     private long heatFrames = 0;
-    private int lastW = -1;
-    private int lastH = -1;
+    private int frameW = 800; // dimensions from last successful draw()
+    private int frameH = 600;
 
     @Override
     public void settings() {
@@ -34,37 +34,48 @@ public class Engine extends PApplet {
         Room room = simulation.getRoom();
         int w = width;
         int h = height;
+
+        // On any dimension change, reset accumulators and skip this frame.
+        // This avoids touching a pixel buffer that AWT may be mutating concurrently.
+        if (w != frameW || h != frameH) {
+            heatAccum = new float[h][w];
+            heatFrames = 0;
+            frameW = w;
+            frameH = h;
+            return;
+        }
+
         float scaleX = w / room.getSize().x;
         float scaleY = h / room.getSize().y;
         float scale = Math.min(scaleX, scaleY);
 
-        // Reset accumulators if the window size changed
-        if (w != lastW || h != lastH) {
-            heatAccum = new float[h][w];
-            heatFrames = 0;
-            lastW = w;
-            lastH = h;
-            return; // Skip this frame; let Processing settle the new buffer
-        }
+        try {
+            loadPixels();
+            if (pixels.length != w * h) {
+                return;
+            }
 
-        loadPixels();
-        for (int py = 0; py < h; py++) {
-            for (int px = 0; px < w; px++) {
-                Vector3 pointLoc = new Vector3(px / scale, py / scale, simulation.getSliceZ());
-                float amp = room.getPointAmplitude(pointLoc, time);
+            for (int py = 0; py < h; py++) {
+                for (int px = 0; px < w; px++) {
+                    Vector3 pointLoc = new Vector3(px / scale, py / scale, simulation.getSliceZ());
+                    float amp = room.getPointAmplitude(pointLoc, time);
 
-                heatAccum[py][px] += Math.abs(amp);
+                    heatAccum[py][px] += Math.abs(amp);
 
-                if (heatMapMode) {
-                    float avg = heatAccum[py][px] / (heatFrames + 1);
-                    pixels[py * w + px] = heatMapColor(avg);
-                } else {
-                    int gray = (int) Math.max(0, Math.min(255, 128 * amp + 128));
-                    pixels[py * w + px] = color(gray);
+                    if (heatMapMode) {
+                        float avg = heatAccum[py][px] / (heatFrames + 1);
+                        pixels[py * w + px] = heatMapColor(avg);
+                    } else {
+                        int gray = (int) Math.max(0, Math.min(255, 128 * amp + 128));
+                        pixels[py * w + px] = color(gray);
+                    }
                 }
             }
+            updatePixels();
+        } catch (ArrayIndexOutOfBoundsException e) {
+            // Window resized mid-frame; skip silently and let next frame settle
         }
-        updatePixels();
+
         heatFrames++;
 
         if (showOverlay) {
@@ -122,8 +133,9 @@ public class Engine extends PApplet {
 
     @Override
     public void keyPressed() {
-        if (key == ' ') {
+        if (key == ' ' || key == 'o' || key == 'O') {
             showOverlay = !showOverlay;
+            println("Overlay: " + showOverlay);
         }
         if (key == 'h' || key == 'H') {
             heatMapMode = !heatMapMode;

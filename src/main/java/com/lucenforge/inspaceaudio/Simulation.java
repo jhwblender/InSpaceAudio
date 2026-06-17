@@ -12,11 +12,11 @@ public class Simulation {
 
     public Simulation() {
         room = new Room(new Vector3(6, 6, 3));
-        room.addRandomSpeakers(5);
+        room.addRandomSpeakers(100);
 
         // pCell-style sound pockets — two zones with different tones
         room.addZone(new AudioZone(new Vector3(3, 3, 1.5f), new SineWave(440)));
-        room.addZone(new AudioZone(new Vector3(5, 2, 1.5f), new SineWave(660)));
+//        room.addZone(new AudioZone(new Vector3(5, 2, 1.5f), new SineWave(660)));
         room.setSynthesizeMode(true);
 
         microphones = new ArrayList<>();
