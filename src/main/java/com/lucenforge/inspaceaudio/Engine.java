@@ -44,6 +44,7 @@ public class Engine extends PApplet {
             heatFrames = 0;
             lastW = w;
             lastH = h;
+            return; // Skip this frame; let Processing settle the new buffer
         }
 
         loadPixels();
