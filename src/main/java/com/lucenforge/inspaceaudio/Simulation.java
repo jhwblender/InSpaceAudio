@@ -12,16 +12,17 @@ public class Simulation {
 
     public Simulation() {
         room = new Room(new Vector3(6, 6, 3));
-        room.addSpeaker(new Vector3(6, 3, 0));
-        room.addSpeaker(new Vector3(0, 3, 0));
-        room.addSpeaker(new Vector3(0, 0, 0));
+        room.addRandomSpeakers(20);
 
-        // Default direct-mode sources so the wavefield is visible out of the box
-        room.getSpeaker(0).addSource(new SineWave(300));
-        room.getSpeaker(1).addSource(new SineWave(600));
-        room.getSpeaker(2).addSource(new SineWave(1000));
+        // pCell-style sound pockets — two zones with different tones
+        room.addZone(new AudioZone(new Vector3(3, 3, 1.5f), new SineWave(440)));
+        room.addZone(new AudioZone(new Vector3(5, 2, 1.5f), new SineWave(660)));
+        room.setSynthesizeMode(true);
 
         microphones = new ArrayList<>();
+
+        // Virtual mic at first zone to sample the hotspot
+        addMicrophone(new Vector3(3, 3, 1.5f));
     }
 
     public void update() {
