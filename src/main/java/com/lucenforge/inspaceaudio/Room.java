@@ -32,6 +32,10 @@ public class Room {
         }
     }
 
+    public ArrayList<Speaker> getSpeakers() {
+        return speakers;
+    }
+
     public Vector3 getSize() {
         return roomSize;
     }
