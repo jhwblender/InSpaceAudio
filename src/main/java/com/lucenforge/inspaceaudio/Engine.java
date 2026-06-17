@@ -24,10 +24,13 @@ public class Engine extends PApplet {
         surface.setResizable(true);
         surface.setLocation(displayWidth / 4, displayHeight / 4);
         simulation = new Simulation();
+        heatAccum = new float[height][width];
     }
 
     @Override
     public void draw() {
+        if (heatAccum == null || simulation == null) return;
+
         background(0);
         float time = simulation.getTime();
 
